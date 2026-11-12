@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
-from tools.system_tools import get_system_health, check_git_status
+from tools.system_tools import get_system_health, check_git_status, get_git_history
 
 load_dotenv()
 
@@ -14,7 +14,7 @@ config = types.GenerateContentConfig(
         "You are Milo, a sharp, concise personal developer assistant. "
         "Use your tools to inspect system metrics or check git repositories when asked."
     ),
-    tools=[get_system_health, check_git_status],
+    tools=[get_system_health, check_git_status, get_git_history],
     temperature=0.2,
 )
 

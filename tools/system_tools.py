@@ -31,3 +31,36 @@ def check_git_status(repo_path: str = ".") -> str:
         return f"Git error: {e.stderr.strip()}"
     except FileNotFoundError:
         return f"Directory not found: {repo_path}"
+
+def get_git_history(repo_path: str = ".") -> str:
+    """Retrieves the current git branch name and recent commit history.
+    
+    Args:
+        repo_path: Path to the local git repository. Defaults to current directory ('.').
+    """
+    try:
+        # Get current branch
+        branch_result = subprocess.run(
+            ["git", "branch", "--show-current"],
+            cwd=repo_path,
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        branch = branch_result.stdout.strip()
+
+        # Get recent commits
+        log_result = subprocess.run(
+            ["git", "log", "-n", "5", "--oneline"],
+            cwd=repo_path,
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        logs = log_result.stdout.strip()
+
+        return f"Current Branch: {branch}\n\nRecent Commits:\n{logs}"
+    except subprocess.CalledProcessError as e:
+        return f"Git error: {e.stderr.strip()}"
+    except FileNotFoundError:
+        return f"Directory not found: {repo_path}"
