@@ -104,10 +104,11 @@ def _launcher(path: str, target: str) -> tuple[list[str] | None, str, str]:
             return None, "", "npm was not found on PATH. Nothing was started."
         command = ["npm", "run", "dev"] if npm_script == "dev" else ["npm", "start"]
         detail = (
-            f"Start Node in a new console\n"
+            f"--- LAUNCH WORKSPACE (NODE) ---\n"
             f"Directory: {path}\n"
             f"Command: {' '.join(command)}\n"
-            f"package.json script: {scripts[npm_script]}"
+            f"package.json script: {scripts[npm_script]}\n"
+            f"----------------------------"
         )
         return command, detail, " ".join(command)
     if want_django:
@@ -116,9 +117,10 @@ def _launcher(path: str, target: str) -> tuple[list[str] | None, str, str]:
         python_exe = _venv_python(path) or sys.executable
         command = [python_exe, "manage.py", "runserver"]
         detail = (
-            f"Start Django in a new console\n"
+            f"--- LAUNCH WORKSPACE (DJANGO) ---\n"
             f"Directory: {path}\n"
-            f"Command: {python_exe} manage.py runserver"
+            f"Command: {python_exe} manage.py runserver\n"
+            f"-------------------------------"
         )
         return command, detail, "manage.py runserver"
     return None, "", "No allowlisted launcher found. Nothing was started."
@@ -162,11 +164,12 @@ def prepare_workspace(path: str = ".") -> str:
 
     venv_path = os.path.join(resolved, "venv")
     action = (
-        f"Create a virtual environment\n"
+        f"--- PREPARE WORKSPACE (VENV) ---\n"
         f"Directory: {resolved}\n"
         f"Command: {sys.executable} -m venv venv\n"
         f"Target: {venv_path}\n"
-        "Dependencies will not be installed."
+        f"Dependencies will not be installed.\n"
+        f"--------------------------------"
     )
     result = execute([sys.executable, "-m", "venv", "venv"], cwd=resolved, action=action)
     return f"{report}\n\n{result}"
