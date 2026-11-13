@@ -5,6 +5,7 @@ from google import genai
 from google.genai import types
 
 from milo.registry import load_tools
+from milo.agent import run_agent_loop
 
 SYSTEM_INSTRUCTION = (
     "You are Milo, a sharp, concise personal developer assistant. "
@@ -27,6 +28,8 @@ def main() -> None:
         raise SystemExit("Missing GEMINI_API_KEY. Add it to .env or the environment.")
 
     tools = load_tools()
+    tools_map = {fn.__name__: fn for fn in tools}
+    
     client = genai.Client(api_key=api_key)
     config = types.GenerateContentConfig(
         system_instruction=SYSTEM_INSTRUCTION,
@@ -50,12 +53,21 @@ def main() -> None:
             break
         if not user_input.strip():
             continue
-        try:
-            response = chat.send_message(user_input)
-        except Exception as exc:
-            print(f"\nMilo: Request failed: {exc}\n")
-            continue
-        print(f"\nMilo: {response.text or '(no text response)'}\n")
+
+        print("\nMilo: ", end="", flush=True)
+        
+        for event in run_agent_loop(chat, user_input, tools_map):
+            etype = event["type"]
+            data = event.get("data", {})
+            
+            if etype == "tool_call":
+                print(f"\n[Thinking: Calling `{data.get('tool')}` with {data.get('args')}]")
+            elif etype == "tool_result":
+                pass
+            elif etype == "final_answer":
+                print(f"{event['content']}\n")
+            elif etype == "error":
+                print(f"\n[Error: {event['content']}]\n")
 
 
 if __name__ == "__main__":
