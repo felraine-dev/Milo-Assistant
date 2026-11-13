@@ -12,6 +12,16 @@ def _validate_path(file_path: str) -> Path:
         raise ValueError(f"Security Error: Access denied for path outside workspace: {file_path}")
     return target_path
 
+def _safe_read_text(file_path: Path) -> str:
+    """Safely read text handling various encodings, BOMs, and legacy formats."""
+    for enc in ("utf-8", "utf-8-sig", "latin-1"):
+        try:
+            return file_path.read_text(encoding=enc)
+        except UnicodeDecodeError:
+            continue
+    # Ultimate fallback if all decoders fail
+    return file_path.read_bytes().decode("latin-1", errors="replace")
+
 def _colorize_diff(diff_text: str) -> str:
     """Transform a plain unified diff into a GitHub-style colored terminal diff."""
     colored_lines = []
@@ -57,7 +67,7 @@ def write_file(path: str, content: str) -> str:
         file_path = _validate_path(path)
         
         if file_path.exists():
-            old_content = file_path.read_text(encoding="utf-8")
+            old_content = _safe_read_text(file_path)
             diff_text = _get_diff(old_content, content, path)
             action_desc = f"OVERWRITE FILE: {path}\n\n--- Diff Preview ---\n{diff_text}\n--------------------"
         else:
@@ -83,7 +93,7 @@ def patch_code(path: str, target: str, replacement: str) -> str:
         if not file_path.exists():
             return f"Error: File {path} does not exist."
             
-        original_content = file_path.read_text(encoding="utf-8")
+        original_content = _safe_read_text(file_path)
         
         if target not in original_content:
             return f"Error: Target text block not found in {path}. Make sure the target string matches exactly."
