@@ -8,7 +8,7 @@ import chromadb
 from google import genai
 from pypdf import PdfReader
 
-from milo.safety import RISK_HIGH, tool
+from milo.safety import RISK_HIGH, tool, confirm
 
 _DB_PATH = ".milo_brain"
 _COLLECTION_NAME = "milo_second_brain"
@@ -68,6 +68,10 @@ def ingest_documents(target_path: str) -> str:
 
     if not os.path.exists(target_path):
         return f"Path not found: {target_path}"
+
+    action_desc = f"Ingest and index documents from path: {target_path}"
+    if not confirm(action_desc):
+        return f"Cancelled: User aborted document ingestion for {target_path}."
 
     supported_exts = {".md", ".txt", ".pdf", ".py", ".js", ".json"}
     files_to_process: list[str] = []
