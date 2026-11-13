@@ -89,7 +89,7 @@ def _commit_type(files: list[tuple[str, str]]) -> str:
     }
     if every(lambda path: path.split("/")[-1] in build_names):
         return "build"
-    if every(lambda path: path.startswith(".github/") or path.startswith("ci/")):
+    if every(lambda path: path.startswith((".github/", "ci/"))):
         return "ci"
     if any(status[0] in {"A", "?"} or status[1] in {"A", "?"} for status, _ in files):
         return "feat"

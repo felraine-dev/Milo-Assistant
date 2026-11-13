@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import hashlib
 import os
+
 import chromadb
 from google import genai
 from pypdf import PdfReader
 
-from milo.safety import RISK_HIGH, tool, confirm
+from milo.safety import RISK_HIGH, confirm, tool
 
 _DB_PATH = ".milo_brain"
 _COLLECTION_NAME = "milo_second_brain"
@@ -149,7 +150,7 @@ def query_knowledge_base(query: str, top_k: int = 4) -> str:
 
     formatted = []
     for doc, meta in zip(documents, metadatas):
-        source = os.path.basename(meta.get("source", "unknown"))
+        os.path.basename(meta.get("source", "unknown"))
         formatted.append(f"\n{doc}")
 
     return "\n\n---\n\n".join(formatted)

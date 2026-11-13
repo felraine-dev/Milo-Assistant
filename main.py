@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
-from milo.registry import load_tools
 from milo.agent import run_agent_loop
+from milo.registry import load_tools
 
 SYSTEM_INSTRUCTION = (
     "You are Milo, a sharp, concise personal developer assistant. "

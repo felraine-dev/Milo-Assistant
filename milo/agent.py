@@ -1,5 +1,5 @@
-import json
 from google.genai import types
+
 
 def run_agent_loop(chat, user_input: str, tools_map: dict, max_iterations: int = 6):
     """
