@@ -1,6 +1,8 @@
 from ddgs import DDGS
 from ddgs.exceptions import DDGSException
-from milo.safety import tool, RISK_LOW
+
+from milo.safety import RISK_LOW, tool
+
 
 @tool(risk=RISK_LOW)
 def web_search(query: str, max_results: int = 5) -> str:
@@ -25,4 +27,4 @@ def web_search(query: str, max_results: int = 5) -> str:
     except DDGSException:
         return f"Web search temporarily unavailable or rate-limited by provider for query: '{query}'."
     except Exception as e:
-        return f"Error executing web search: {str(e)}"
+        return f"Error executing web search: {e!s}"

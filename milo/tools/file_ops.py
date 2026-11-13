@@ -1,7 +1,8 @@
-import os
 import difflib
+import os
 from pathlib import Path
-from milo.safety import RISK_HIGH, tool, confirm
+
+from milo.safety import RISK_HIGH, confirm, tool
 
 WORKSPACE_ROOT = Path(os.getcwd()).resolve()
 
@@ -35,7 +36,7 @@ def _colorize_diff(diff_text: str) -> str:
         elif line.startswith("@@"):
             # Cyan for chunk/hunk location headers
             colored_lines.append(f"\033[36m{line}\033[0m")
-        elif line.startswith("---") or line.startswith("+++"):
+        elif line.startswith(("---", "+++")):
             # Bold for file paths
             colored_lines.append(f"\033[1m{line}\033[0m")
         else:
@@ -80,7 +81,7 @@ def write_file(path: str, content: str) -> str:
         file_path.write_text(content, encoding="utf-8")
         return f"Successfully wrote {len(content)} characters to {path}"
     except Exception as e:
-        return f"Error writing file {path}: {str(e)}"
+        return f"Error writing file {path}: {e!s}"
 
 @tool(risk=RISK_HIGH)
 def patch_code(path: str, target: str, replacement: str) -> str:
@@ -110,7 +111,7 @@ def patch_code(path: str, target: str, replacement: str) -> str:
         
         return f"Successfully patched {path}."
     except Exception as e:
-        return f"Error patching file {path}: {str(e)}"
+        return f"Error patching file {path}: {e!s}"
 
 @tool(risk=RISK_HIGH)
 def delete_file(path: str) -> str:
@@ -132,4 +133,4 @@ def delete_file(path: str) -> str:
         file_path.unlink()
         return f"Successfully deleted {path}."
     except Exception as e:
-        return f"Error deleting file {path}: {str(e)}"
+        return f"Error deleting file {path}: {e!s}"

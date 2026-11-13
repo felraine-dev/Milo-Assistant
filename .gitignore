@@ -12,3 +12,5 @@ __pycache__/
 
 .milo_brain/
 notes/
+.ruff_cache/
+.pytest_cache/
